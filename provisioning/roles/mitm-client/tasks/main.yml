@@ -1,0 +1,21 @@
+- name: Create ca cert dir 
+  file:
+    path: /usr/local/share/ca-certificates
+    state: directory
+    owner: root
+    group: root
+
+- name: Install mitmproxy's certs
+  copy: 
+    src: ../certs/mitmproxy-ca-cert.cer
+    dest: /usr/local/share/ca-certificates/mitmproxy-ca.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Update ca cert store
+  shell: update-ca-certificates --fresh
+  
+# ROUTING
+- name: route through mitmproxy
+  shell: ip route replace default via 10.0.3.3 dev eth1

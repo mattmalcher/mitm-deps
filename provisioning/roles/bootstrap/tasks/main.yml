@@ -1,0 +1,29 @@
+- name: Update APT package cache
+  apt: 
+    update_cache: yes 
+    cache_valid_time: 3600
+    force_apt_get: true
+
+- name: Upgrade APT to the latest packages
+  apt:
+    upgrade: safe
+    force_apt_get: true
+
+- name: Install packages
+  apt:
+    name: [
+      "locales",
+      "curl",
+      "vim-tiny",
+      "htop",
+      "lsof",
+      "netcat"
+    ]
+    state: present
+    force_apt_get: true
+
+- name: Ensure utf8 locale exists
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
+

@@ -1,0 +1,9 @@
+- name: restart dnsmasq
+  systemd:
+    name: dnsmasq
+    state: restarted
+    
+- name: restart mitmdump
+  systemd:
+    name: mitmdump
+    state: restarted
