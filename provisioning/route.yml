@@ -1,19 +1,13 @@
 ---
-# playbook to set up docker swarm on rockylinux machines
 
 # to run & set up all machines
-- hosts: all
-  become: yes
-  roles:
-    - bootstrap
-
 - hosts: mitm-server
   become: yes
   roles:
-    - mitm-server
+    - mitm-server/route
 
 # Fetch the image on the vagrant host - means that it is retained between deployments
 - hosts: mitm-client
   become: yes
   roles:
-    - mitm-client
+    - mitm-client/route

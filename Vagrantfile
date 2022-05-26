@@ -41,7 +41,17 @@ Vagrant.configure("2") do |config|
                 nodeconfig.vm.provision "ansible" do |ansible|   
                     # Disable default limit to connect to all the machines        
                     ansible.limit = "all" 
-                    ansible.playbook = "provisioning/playbook.yml"  
+                    ansible.playbook = "provisioning/bootstrap.yml"  
+                end
+            end
+
+            # provision both once you get to the second machine
+            if node[:hostname] == 'mitm-client'
+                nodeconfig.vm.provision "ansible", run: "always" do |ansible|   
+                    # Disable default limit to connect to all the machines        
+                    ansible.limit = "all" 
+                    ansible.playbook = "provisioning/route.yml"  
+                    ansible.become = true
                 end
             end
 
@@ -57,8 +67,6 @@ Vagrant.configure("2") do |config|
                     vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
                 end
             end
-
-
             
         end
     end
