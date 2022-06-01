@@ -1,0 +1,4 @@
+- name: restart mitmdump
+  systemd:
+    name: mitmdump
+    state: restarted

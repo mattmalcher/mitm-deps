@@ -27,12 +27,12 @@
 
 - name: download mitmproxy
   get_url:
-    url="https://snapshots.mitmproxy.org/4.0.4/mitmproxy-4.0.4-linux.tar.gz"
-    dest="~/mitmproxy-4.0.4-linux.tar.gz"
+    url="https://snapshots.mitmproxy.org/{{ mitm_version }}/mitmproxy-{{ mitm_version }}-linux.tar.gz"
+    dest="~/mitmproxy-{{ mitm_version }}-linux.tar.gz"
 
 - name: Install mitmproxy
   unarchive:
-    src: ~/mitmproxy-4.0.4-linux.tar.gz
+    src: ~/mitmproxy-{{ mitm_version }}-linux.tar.gz
     dest: /usr/local/bin
     remote_src: yes
 

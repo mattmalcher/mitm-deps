@@ -2,10 +2,18 @@
 Description=mitmdump service
 After=network.target
 
+# start mitmdump to mitmdump.log, filtering out any flow where there is anything response body (i.e. avoid logging all the content)
+# initial attempts, slow!
+# ExecStart=/usr/local/bin/mitmdump --mode transparent --showhost -w /home/vagrant/mitmdump.log '!~bs .*'
+# ExecStart=/usr/local/bin/mitmdump --mode transparent --showhost -w /home/vagrant/mitmdump.log --set dumper_filter='~q'
+
 [Service]
 Type=simple
 User=vagrant
-ExecStart=/usr/local/bin/mitmdump  --mode transparent --showhost -w /home/vagrant/mitmdump.log
+# start mitmdump, and where a response body is larger than 1mb, stream it, instead of processing it on the server before passing to the client
+# note - streamed content is not logged, which is fine for us - we dont need to log the body of large requests, we are saving it anyway!
+# attempting to log large content causes connection speed to be cpu limited
+ExecStart=/usr/local/bin/mitmdump --mode transparent --showhost -w /home/vagrant/mitmdump.log --set stream_large_bodies=1m
 Restart=always
 RestartSec=1
 

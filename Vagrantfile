@@ -13,19 +13,22 @@ Vagrant.configure("2") do |config|
     nodes.each do |node|
         config.vm.define node[:hostname] do |nodeconfig|
             nodeconfig.vm.box = "debian/bullseye64"
-
-            # disable rsync plugin
-            nodeconfig.vm.synced_folder '.', '/vagrant', :disabled => true
             
             nodeconfig.vm.hostname = node[:hostname] #+ ".box"
 
             # Network config depending on if server or client
             if node[:hostname] == 'mitm-server'
                 nodeconfig.vm.network "private_network", ip: "10.0.3.3", netmask: "255.255.255.0", virtualbox__intnet: "mitmdeps"
+                # disable rsync plugin
+                nodeconfig.vm.synced_folder '.', '/vagrant', :disabled => true
             end
 
             if node[:hostname] == 'mitm-client'
-                nodeconfig.vm.network "private_network", type: "dhcp", virtualbox__intnet: "mitmdeps"
+                nodeconfig.vm.network "private_network", ip: "10.0.3.4", virtualbox__intnet: "mitmdeps"
+                
+                # Add NFS private network & enable sharing the deps folder to the guest
+                nodeconfig.vm.network "private_network", type: "dhcp",  name: "vboxnet0"               
+               
             end
             
             nodeconfig.ssh.insert_key = FALSE
@@ -51,7 +54,6 @@ Vagrant.configure("2") do |config|
                     # Disable default limit to connect to all the machines        
                     ansible.limit = "all" 
                     ansible.playbook = "provisioning/route.yml"  
-                    ansible.become = true
                 end
             end
 
@@ -67,6 +69,24 @@ Vagrant.configure("2") do |config|
                     vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
                 end
             end
+
+            # provision both once you get to the second machine
+            if node[:hostname] == 'mitm-client'
+                nodeconfig.vm.provision "ansible", run: "always" do |ansible|   
+                    # Disable default limit to connect to all the machines        
+                    ansible.limit = "all" 
+                    ansible.playbook = "provisioning/nfs.yml"  
+                end
+            end
+
+            # provision both once you get to the second machine
+            if node[:hostname] == 'mitm-client'
+                nodeconfig.vm.provision "ansible", run: "always" do |ansible|   
+                    # Disable default limit to connect to all the machines        
+                    ansible.limit = "all" 
+                    ansible.playbook = "provisioning/get_deps.yml"  
+            end
+        end
             
         end
     end

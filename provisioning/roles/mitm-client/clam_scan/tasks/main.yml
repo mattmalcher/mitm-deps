@@ -1,0 +1,14 @@
+- name: scan directory
+  command: clamscan -v --log=clam.log {{dir_to_scan}}
+
+- name: copy log to host
+  ansible.builtin.fetch:
+    src: clam.log
+    dest: "{{ log_dir }}/clam.log"
+    flat: yes
+
+- name: delete log on guest (mitm-server)
+  ansible.builtin.file:
+    path: clam.log
+    state: absent
+

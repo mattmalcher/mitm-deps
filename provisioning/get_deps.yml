@@ -1,0 +1,49 @@
+---
+- hosts: mitm-client
+  become: yes
+  tasks:
+  - name: Copy deps scripts
+    ansible.posix.synchronize:
+      src: "../dep_fetchers"
+      dest: /home/vagrant/
+
+- hosts: mitm-server
+  become: yes
+  roles:    
+    - role: mitm-server/copy_logs
+      vars:
+      log_file: ../logs/init.log
+      
+
+- hosts: mitm-client
+  become: yes
+  tasks:
+    - name: get spacy deps
+      make:
+        chdir: dep_fetchers/spacy
+        target: spacy_dl_en_v3
+
+
+- hosts: mitm-server
+  become: yes
+  roles:    
+    - role: mitm-server/copy_logs
+      vars:
+      log_file: ../logs/spacy/mitm.log
+
+
+- hosts: mitm-client
+  become: yes
+  roles:    
+    - role: mitm-client/clam_scan
+      vars:
+      dir_to_scan: dep_fetchers/spacy/content
+      log_dir: ../logs/spacy
+
+- hosts: mitm-client
+  become: yes
+  roles:    
+    - role: mitm-client/file_permissions
+      vars:
+      dir_to_scan: dep_fetchers/spacy/content
+      log_dir: ../logs/spacy

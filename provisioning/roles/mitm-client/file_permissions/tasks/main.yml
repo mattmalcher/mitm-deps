@@ -1,0 +1,32 @@
+- name: list all files
+  shell: find {{dir_to_scan}} -type f -exec ls -l {} \; > files.txt
+
+- name: list executables
+  shell: touch executable_files.txt && find {{dir_to_scan}} -type f -perm /u=x,g=x,o=x -exec ls -l {} \; > executable_files.txt
+
+- name: list all files
+  shell: find {{dir_to_scan}} -type f -exec md5sum {} + > md5s.txt
+
+- name: copy files.txt to host
+  ansible.builtin.fetch:
+    src: files.txt
+    dest: "{{ log_dir }}/files.txt"
+    flat: yes
+
+- name: copy executable_files.txt to host
+  ansible.builtin.fetch:
+    src: executable_files.txt
+    dest: "{{ log_dir }}/executable_files.txt"
+    flat: yes
+
+- name: copy md5s.txt to host
+  ansible.builtin.fetch:
+    src: md5s.txt
+    dest: "{{ log_dir }}/md5s.txt"
+    flat: yes
+
+- name: delete files
+  ansible.builtin.file:
+    path: ["files.txt", "executable_files.txt", "md5s.txt"]
+    state: absent
+
