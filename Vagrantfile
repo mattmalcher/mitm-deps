@@ -77,17 +77,8 @@ Vagrant.configure("2") do |config|
                     ansible.limit = "all" 
                     ansible.playbook = "provisioning/nfs.yml"  
                 end
-            end
-
-            # provision both once you get to the second machine
-            if node[:hostname] == 'mitm-client'
-                nodeconfig.vm.provision "ansible", run: "always" do |ansible|   
-                    # Disable default limit to connect to all the machines        
-                    ansible.limit = "all" 
-                    ansible.playbook = "provisioning/get_deps.yml"  
-            end
-        end
-            
+            end  
+                      
         end
     end
 end
