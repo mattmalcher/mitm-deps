@@ -1,34 +1,16 @@
 # mitm-deps
-Attempt to use mitm proxy to gather urls for dependencies pulled from the web by a container.
-
-This is heavily based on the [`mitm-in-a-box`](https://github.com/abeluck/mitm-in-a-box) repo. The following have changed:
-* reorganised into a single playbook and roles
-* updated versions
+Setup for download & vetting of model dependency files.
 
 # Goal
-Want an environment, where I can install & test packages, models etc that transparently routes all requests through a mitm proxy so I can generate a log and audit exactly what is requested from where.
+Want an environment, where I can install & test packages, models etc and capture relevant info to satisfy myself they arent malicious. It should:
 
+* Route all requests through a proxy so I can generate a log and audit exactly what is requested from where.
+* Virus scan files
+* Inspect files
+	- generate md5s to check against source
+	- check for executables
 
-# To Use
-
-**Console 1**
-
-```
-cd mitm-client
-vagrant ssh
-curl https://yahoo.com # request completes succesfully
-```
-
-**Console 2**
-
-```
-cd mitm-server
-vagrant ssh
-mitmproxy -r mitmdump.log --showhost --no-server # view the stored log
-```
-
-
-# Setup
+# Overview
 
 ## Server
 * systemd unit running /usr/local/bin/mitmdump on 8080 
@@ -36,69 +18,63 @@ mitmproxy -r mitmdump.log --showhost --no-server # view the stored log
 * dnsmasq acting as DNS server & DHCP Server
 	* `sudo journalctl -u dnsmasq`
 	* `sudo journalctl -u dnsmasq --follow`
-* iptables configured to point traffic from 10.0.3.3 ports 80/443 to 127.0.0.1:8080
+* iptables configured to point traffic from 10.0.3.3 ports 80/443 to the mitm proxy on 127.0.0.1:8080
 	* `sudo iptables -S`
 
 ## Client
-* set up to send its traffic to 10.0.3.3? `ip route replace default via 10.0.3.3 dev eth1`
+* set up to send its traffic to 10.0.3.3 `ip route replace default via 10.0.3.3 dev eth1`
+* uses the stuff in /dep_fetchers to download dependencies
+* has clamav installed & updates definitions
+* runs get_deps playbook to download and inspect the dependencies.
 
 
+# To Use
 
-# Debugging
+If you run `vagrant up` the entire infrastructure will get stood up.
 
-This isnt working yet, and i'm not sure why
+## Auto
 
-## Client DNS
-Initially curl from the client times out, but then, after some time it becomes unable to even resolve addresses:
+Once everything is up and running you can use: `make get_deps`. The `logs/<dep>/` folders should start filling up with request logs, virus scan results, and file information.
 
-```sh
-curl http://google.com
+You can re-run make `get_deps` as you develop the dep_fetchers without re-provisioning all the other bits.
 
-curl: (6) Could not resolve host: google.com
+
+## AdHoc
+
+You can also ssh into the server/client machines for tests or ad-hoc tasks. For example:
+
+**Console 1**
+
+```
+vagrant ssh mitm-client
+curl https://yahoo.com 
 ```
 
-dig appears to look at 10.0.3.3 but get **refused**
+**Console 2**
 
-```sh
-vagrant@mitm-client:~$ dig http://google.com
-
-; <<>> DiG 9.16.27-Debian <<>> http://google.com
-;; global options: +cmd
-;; Got answer:
-;; ->>HEADER<<- opcode: QUERY, status: REFUSED, id: 41110
-;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
-
-;; OPT PSEUDOSECTION:
-; EDNS: version: 0, flags:; udp: 4096
-;; QUESTION SECTION:
-;http://google.com.             IN      A
-
-;; Query time: 4 msec
-;; SERVER: 10.0.3.3#53(10.0.3.3)
-;; WHEN: Tue May 24 17:44:03 UTC 2022
-;; MSG SIZE  rcvd: 46
 ```
-
-can ping 10.0.3.3 from client successfully, so I guess becomes a question of why we cant ask it DNS questions?
-
-It looks like dnsmasq is reading the supplied config because its logs inlude:
-
-> mitm-server dnsmasq[10869]: using nameserver 1.1.1.1#53
-
-dig gets answers when run on the server, is there something silly like need to open some ports on the virtualbox?
-
-
-
-
+vagrant ssh mitm-server
+mitmproxy -r mitmdump.log --showhost --no-server # view the stored log
+```
 
 # Refs
 
-https://docs.mitmproxy.org/stable/howto-transparent-vms/
+This is heavily based on the [`mitm-in-a-box`](https://github.com/abeluck/mitm-in-a-box) repo with extensions for my use case.
 
-https://softwaretester.info/man-in-the-middle-attack-mitm/
+The mitm-in-a-box code has been refactored to:
+* reorganised into a single playbook / vagrantfile
+* use updated versions of debian, mitm-proxy
 
-https://gitlab.com/guardianproject/masque-mitm/-/blob/main/proxy-router/Vagrantfile
+## mitmproxy
 
-https://github.com/abeluck/mitm-in-a-box/ - very useful
+The following docs were useful:
 
-https://docs.mitmproxy.org/stable/mitmproxytutorial-userinterface/
+* https://docs.mitmproxy.org/stable/howto-transparent-vms/
+* https://docs.mitmproxy.org/stable/mitmproxytutorial-userinterface/
+
+## Ansible
+
+This ansible role for clamav was valuable:
+
+https://github.com/geerlingguy/ansible-role-clamav 
+
