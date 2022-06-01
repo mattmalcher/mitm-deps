@@ -5,8 +5,10 @@
 - hosts: all
   become: yes
   roles:
-    - general/bootstrap
-
+    - role: general/bootstrap
+      vars:
+      deps_repo: ~/repos/folder/model_deps
+    
 - hosts: mitm-server
   become: yes
   roles:
@@ -17,3 +19,4 @@
   become: yes
   roles:
     - mitm-client/bootstrap
+    - mitm-client/docker_worker

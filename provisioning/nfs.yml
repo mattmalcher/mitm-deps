@@ -1,0 +1,8 @@
+---
+- hosts: mitm-client
+  become: yes
+  roles:    
+    - role: nfs_user
+      vars:
+      mountpoint: /mnt/model_deps
+      mynfs: 192.168.56.1:/model_deps

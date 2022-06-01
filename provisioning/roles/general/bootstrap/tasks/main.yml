@@ -17,7 +17,9 @@
       "vim-tiny",
       "htop",
       "lsof",
-      "netcat"
+      "netcat",
+      "rsync",
+      "nfs-common"
     ]
     state: present
     force_apt_get: true
@@ -26,4 +28,3 @@
   locale_gen:
     name: en_US.UTF-8
     state: present
-

@@ -1,0 +1,4 @@
+# permissions to set on mountpoint
+# mitm_version: "4.0.4"
+# mitm_version: "8.1.0" # latest as of 2022-06-01
+mitm_version: "6.0.2"

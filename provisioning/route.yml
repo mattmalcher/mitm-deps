@@ -1,12 +1,12 @@
 ---
 
-# to run & set up all machines
+# set up route on server
 - hosts: mitm-server
   become: yes
   roles:
     - mitm-server/route
 
-# Fetch the image on the vagrant host - means that it is retained between deployments
+# set up route on client
 - hosts: mitm-client
   become: yes
   roles:

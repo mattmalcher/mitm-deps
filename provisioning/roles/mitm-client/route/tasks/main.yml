@@ -1,20 +1,17 @@
-- name:
-  shell: ip route list
-  register: pre_output
+# - name:
+#   shell: ip route list
+#   register: pre_output
 
-- ansible.builtin.debug:
-    var: pre_output
-
-- name: initialise route (running just replace seems to fail)
-  shell: ip route add 10.0.3.0/24 dev eth1   
+# - ansible.builtin.debug:
+#     var: pre_output
 
 - name: set default route to go through mitmproxy
   shell: ip route replace default via 10.0.3.3 dev eth1
 
-- name:
-  shell: ip route list
-  register: post_output
+# - name:
+#   shell: ip route list
+#   register: post_output
 
-- ansible.builtin.debug:
-    var: post_output  
+# - ansible.builtin.debug:
+#     var: post_output  
    

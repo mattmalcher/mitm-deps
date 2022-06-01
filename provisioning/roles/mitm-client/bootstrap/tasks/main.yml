@@ -15,3 +15,21 @@
 
 - name: Update ca cert store
   shell: update-ca-certificates --fresh
+
+- name: Install packages for dep scanning
+  apt:
+    name: [
+      "clamav"
+    ]
+    state: present
+    force_apt_get: true
+  register: clamav_packages_install
+
+- name: Run freshclam after ClamAV packages change.
+  command: freshclam
+  when: clamav_packages_install.changed
+  register: freshclam_result
+  # On Debian, freshclam is automatically run post-install, so this may fail.
+  failed_when:
+    - freshclam_result is failed
+    - freshclam_result.stderr.find('locked by another process') != -1
