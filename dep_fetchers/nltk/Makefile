@@ -1,4 +1,5 @@
 build:
-	docker build -t nltk .
-	docker run --rm nltk
+	docker build --network host -t nltk .
+run:
+	docker run -v $(shell pwd) --network host --rm nltk
 
