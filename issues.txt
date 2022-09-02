@@ -1,0 +1,13 @@
+https://askubuntu.com/questions/453393/virtualbox-fails-with-implementation-of-the-usb-2-0-controller-not-found-after
+sudo apt install virtualbox-ext-pack
+wget https://snapshots.mitmproxy.org/8.1.1/mitmproxy-8.1.1-linux.tar.gz
+tar -xzvf mitmproxy-8.1.1-linux.tar.gz
+mkdir certs
+./mitmdump --set confdir=certs
+sudo mkdir /srv/nfs4/model_deps
+sudo chmod 777 /srv/nfs4/model_deps
+sudo exportfs -ar
+
+
+Reorder time and hash to make logs sortable
+

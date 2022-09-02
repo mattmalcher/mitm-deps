@@ -23,3 +23,4 @@ get_deps:
 # 	make view_log logfile=logs/spacy.log
 view_log:
 	mitmproxy -r $(logfile) --showhost --no-server
+

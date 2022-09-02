@@ -43,6 +43,18 @@
     owner: vagrant
     group: vagrant
 
+- name: Create req dir
+  file:
+    path: /home/vagrant/req
+    state: directory
+    owner: vagrant
+    group: vagrant
+    
+- name: Push log.py
+  ansible.builtin.template:
+    src: log.py
+    dest: /home/vagrant
+      
 - name: Push mitmdump.service
   ansible.builtin.template:
     src: mitmdump.service

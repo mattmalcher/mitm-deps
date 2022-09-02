@@ -77,8 +77,7 @@ Vagrant.configure("2") do |config|
                     ansible.limit = "all" 
                     ansible.playbook = "provisioning/nfs.yml"  
                 end
-            end  
-                      
+            end                        
         end
     end
 end
