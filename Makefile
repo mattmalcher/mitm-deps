@@ -23,3 +23,8 @@ get_deps:
 # 	make view_log logfile=logs/spacy.log
 view_log:
 	mitmproxy -r $(logfile) --showhost --no-server
+
+# create a virtualbox 192.168.56.x subnet by making & destroying a machine
+init_subnet:
+	(cd init_vm_subnet; vagrant up)
+	(cd init_vm_subnet; vagrant destroy -f )

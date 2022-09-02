@@ -29,6 +29,14 @@
       state: latest
       update_cache: true
 
+- name: Allow insecure registry
+  ansible.builtin.lineinfile:
+    path: /etc/docker/daemon.json
+    # double quote to allow escaping, and leading space stops ansible treating this as json
+    # https://github.com/ansible/ansible-modules-core/issues/2836#issuecomment-172649358
+    line: " { \"insecure-registries\" : [\"docker.service:5000\"] }" 
+    create: yes
+
 - name: Start Docker service
   service:
     name: docker
