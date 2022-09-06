@@ -3,7 +3,8 @@
     name: [
       'aptitude',
       'dnsmasq',
-      'ncdu'
+      'ncdu',
+      'jq'
     ]
     state: present
     force_apt_get: true

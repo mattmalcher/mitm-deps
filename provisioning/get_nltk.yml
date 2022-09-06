@@ -13,7 +13,8 @@
   roles:    
     - role: mitm-server/copy_logs
       vars:
-      log_file: ../logs/init.log
+        - mitmdump_log_file: ../logs/init.log
+        - url_log_file: ../logs/url.log
       
 
 - hosts: mitm-client
@@ -30,7 +31,8 @@
   roles:    
     - role: mitm-server/copy_logs
       vars:
-      log_file: ../logs/nltk/build/init.log
+        - mitmdump_log_file: ../logs/nltk/build/init.log
+        - url_log_file: ../logs/nltk/build/url.log
 
 
 - hosts: mitm-client
@@ -47,7 +49,8 @@
   roles:    
     - role: mitm-server/copy_logs
       vars:
-      log_file: ../logs/nltk/mitm.log
+        - mitmdump_log_file: ../logs/nltk/mitm.log
+        - url_log_file: ../logs/nltk/url.log
 
 
 - hosts: mitm-client

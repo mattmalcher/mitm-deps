@@ -1,20 +1,33 @@
-- name: copy log to host
+- name: copy mitmdump log to host
   ansible.builtin.fetch:
     src: mitmdump.log
-    dest: "{{ log_file }}"
+    dest: "{{ mitmdump_log_file }}"
     flat: yes
 
-- name: copy log to host
+- name: Combine url logs
+  ansible.builtin.shell: cat req/*.json | jq -s 'flatten' | jq '.[].url' > url.log
+
+- name: copy url log to host
   ansible.builtin.fetch:
-    src: mitmdump.log
-    dest: "{{ log_file }}"
+    src: url.log
+    dest: "{{ url_log_file }}"
     flat: yes
 
+- name: Delete url log files
+  file:
+    state: absent
+    path: home/vagrant/req/
+
+- name: Create req dir
+  file:
+    path: /home/vagrant/req
+    state: directory
+    owner: vagrant
+    group: vagrant
 
 - name: delete log on guest (mitm-server)
   ansible.builtin.file:
     path: mitmdump.log
     state: absent
   notify: restart mitmdump
-
 
