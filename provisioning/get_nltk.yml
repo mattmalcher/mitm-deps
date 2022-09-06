@@ -19,10 +19,10 @@
 - hosts: mitm-client
   become: yes
   tasks:
-    - name: get spacy deps
+    - name: Build NLTK container
       make:
-        chdir: dep_fetchers/spacy
-        target: spacy_dl_en_v3
+        chdir: dep_fetchers/nltk
+        target: get_nltk_data_build
 
 
 - hosts: mitm-server
@@ -30,7 +30,24 @@
   roles:    
     - role: mitm-server/copy_logs
       vars:
-      log_file: ../logs/spacy/mitm.log
+      log_file: ../logs/nltk/build/init.log
+
+
+- hosts: mitm-client
+  become: yes
+  tasks:
+    - name: Get NLTK data
+      make:
+        chdir: dep_fetchers/nltk
+        target: get_nltk_data_download
+
+
+- hosts: mitm-server
+  become: yes
+  roles:    
+    - role: mitm-server/copy_logs
+      vars:
+      log_file: ../logs/nltk/mitm.log
 
 
 - hosts: mitm-client
@@ -38,13 +55,15 @@
   roles:    
     - role: mitm-client/clam_scan
       vars:
-      dir_to_scan: dep_fetchers/spacy/content
-      log_dir: ../logs/spacy
+      dir_to_scan: dep_fetchers/nltk/content
+      log_dir: ../logs/nltk
 
+  
 - hosts: mitm-client
   become: yes
   roles:    
     - role: mitm-client/file_permissions
       vars:
-      dir_to_scan: dep_fetchers/spacy/content
-      log_dir: ../logs/spacy
+      dir_to_scan: dep_fetchers/nltk/content
+      log_dir: ../logs/nltk
+ 

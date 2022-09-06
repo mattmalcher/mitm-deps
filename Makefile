@@ -10,14 +10,15 @@ clean:
 
 default: gencerts
 
-# Run just the get_deps playbook, outside of vagrant but using the vagrant inventory & ignoring host checking.
-get_deps:
+# Run a dep_fetcher playbook, outside of vagrant but using the vagrant inventory & ignoring host checking.
+# make run_dep_playbook playbook=provisioning/get_nltk.yml
+run_dep_playbook:
 	ansible-playbook \
 	-i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory \
 	-u vagrant \
 	--ssh-common-args " -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
 	--private-key '~/.vagrant.d/insecure_private_key' \
-	provisioning/get_deps.yml
+	$(playbook)
 
 # use by passing logfile when calling make, for example:
 # 	make view_log logfile=logs/spacy.log

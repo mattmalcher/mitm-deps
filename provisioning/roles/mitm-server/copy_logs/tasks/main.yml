@@ -4,6 +4,13 @@
     dest: "{{ log_file }}"
     flat: yes
 
+- name: copy log to host
+  ansible.builtin.fetch:
+    src: mitmdump.log
+    dest: "{{ log_file }}"
+    flat: yes
+
+
 - name: delete log on guest (mitm-server)
   ansible.builtin.file:
     path: mitmdump.log

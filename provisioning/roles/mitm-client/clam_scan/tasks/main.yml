@@ -1,5 +1,5 @@
 - name: scan directory
-  command: clamscan -v --log=clam.log {{dir_to_scan}}
+  command: clamscan -r -v --log=clam.log {{dir_to_scan}}
 
 - name: copy log to host
   ansible.builtin.fetch:
