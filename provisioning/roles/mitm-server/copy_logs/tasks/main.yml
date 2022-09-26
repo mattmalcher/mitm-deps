@@ -5,7 +5,7 @@
     flat: yes
 
 - name: Combine url logs
-  ansible.builtin.shell: cat req/*.json | jq -s 'flatten' | jq '.[].url' > url.log
+  ansible.builtin.shell: cat req/*.json | jq -s 'flatten | sort_by(.time_stamp)' | jq '.[] | "\(.url), \(.time_stamp)"' > url.log
 
 - name: copy url log to host
   ansible.builtin.fetch:
