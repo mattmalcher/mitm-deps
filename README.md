@@ -34,7 +34,7 @@ If you run `vagrant up` the entire infrastructure will get stood up.
 
 ## Auto
 
-Once everything is up and running you can use: `make get_deps`. The `logs/<dep>/` folders should start filling up with request logs, virus scan results, and file information.
+Once everything is up and running you can use: `make run_dep_playbook playbook=provisioning/<relevant playbook>.yml`. The `logs/<dep>/` folder should start filling up with request logs, virus scan results, and file information.
 
 You can re-run make `get_deps` as you develop the dep_fetchers without re-provisioning all the other bits.
 

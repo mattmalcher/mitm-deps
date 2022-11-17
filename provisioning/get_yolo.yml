@@ -1,0 +1,72 @@
+---
+- hosts: mitm-client
+  become: yes
+  tasks:
+  - name: Copy deps scripts
+    ansible.posix.synchronize:
+      src: "../dep_fetchers"
+      dest: /home/vagrant/
+
+
+- hosts: mitm-server
+  become: yes
+  roles:    
+    - role: mitm-server/copy_logs
+      vars:
+        - mitmdump_log_file: ../logs/init.log
+        - url_log_file: ../logs/url.log
+      
+
+- hosts: mitm-client
+  become: yes
+  tasks:
+    - name: Build YOLO container
+      make:
+        chdir: dep_fetchers/yolo
+        target: get_yolo_data_build
+
+
+- hosts: mitm-server
+  become: yes
+  roles:    
+    - role: mitm-server/copy_logs
+      vars:
+        - mitmdump_log_file: ../logs/yolo/build/init.log
+        - url_log_file: ../logs/yolo/build/url.log
+
+
+- hosts: mitm-client
+  become: yes
+  tasks:
+    - name: Get YOLO data
+      make:
+        chdir: dep_fetchers/yolo
+        target: get_yolo_data_download
+
+
+- hosts: mitm-server
+  become: yes
+  roles:    
+    - role: mitm-server/copy_logs
+      vars:
+        - mitmdump_log_file: ../logs/yolo/mitm.log
+        - url_log_file: ../logs/yolo/url.log
+
+
+- hosts: mitm-client
+  become: yes
+  roles:    
+    - role: mitm-client/clam_scan
+      vars:
+      dir_to_scan: dep_fetchers/yolo/content
+      log_dir: ../logs/yolo
+
+  
+- hosts: mitm-client
+  become: yes
+  roles:    
+    - role: mitm-client/file_permissions
+      vars:
+      dir_to_scan: dep_fetchers/yolo/content
+      log_dir: ../logs/yolo
+ 

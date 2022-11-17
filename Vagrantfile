@@ -4,7 +4,7 @@
 
 nodes = [
   { :hostname => 'mitm-server', :ram => '2048', :cpus => '2' }, 
-  { :hostname => 'mitm-client', :ram => '2048', :cpus => '2' }
+  { :hostname => 'mitm-client', :ram => '4096', :cpus => '4' }
 ]
 
 Vagrant.configure("2") do |config|
